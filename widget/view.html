@@ -1,0 +1,15 @@
+<!-- Copyright start
+    MIT License
+    Copyright (c) 2024 Fortinet Inc
+Copyright end -->
+<link rel="stylesheet" href="widgets/installed/cyberThreatWorldMap-1.0.0/widgetAssets/css/styles.css">
+<div class="padding-right-0 padding-left-0 widget-dashboard-title-width"
+  data-ng-class="(page === 'dashboard' || page === 'reporting') ? 'widget-dashboard-title-width' : 'widget-title-width'">
+  <h5 data-ng-if="config.title !==''" class="padding-left-lg margin-top-0 margin-bottom-0  text-overflow">
+    {{config.title}}</h5>
+</div>
+<div data-ng-if="config.embedded===undefined" class="widget widget-container chart display-flex align-items-center justify-content" style="width: 100%; height:100%" id="world-map-{{config.wid}}">
+</div>
+<div data-ng-if="config.data.length===0" class="text-center">No information available</div>
+<div data-ng-if="config.embedded" class="widget widget-container chart display-flex align-items-center justify-content" style="width: 100%; height:100%" id="world-map-embedded">
+</div>

@@ -1,0 +1,23 @@
+{
+    "name": "cyberThreatWorldMap",
+    "title": "Cyber Threat World Map",
+    "subTitle": "World Map widget which maps fields mapping to countries",
+    "version": "1.0.0",
+    "publishedDate": 1717391160,
+    "releaseNotes": "unavailable",
+    "metadata": {
+        "description": "",
+        "pages": [
+            "Dashboard"
+        ],
+        "certified": "Yes",
+        "publisher": "Fortinet",
+        "compatibility": [
+            "7.6.1"
+        ],
+        "category": [
+            "Information"
+        ]
+    },
+    "development": true
+}
