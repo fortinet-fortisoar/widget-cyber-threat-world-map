@@ -1,0 +1,50 @@
+<!--Copyright start
+    MIT License
+    Copyright (c) 2024 Fortinet Inc
+Copyright end-->
+<!-- class="noMargin" name="editWidgetForm" data-ng-class="{'state-wait': processing } -->
+<form data-ng-submit="save()" name="editCyberThreatWorldMapForm">
+    <div class="modal-header">
+        <h3 class="modal-title col-md-9">Edit World Map</h3>
+        <button type="button" class="close" data-ng-click="cancel()" data-dismiss="modal" aria-label="Close"
+            id="close-edit-widget-form-btn">
+            <div aria-hidden="true" class="version-button">+</div>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group" name="userForm">
+            <label for="title" class="control-label">Title</label>
+            <input id="title" name="title" type="text" class="form-control" data-ng-model="config.title">      
+            <lable for="worldMapModule" class="control-label">Module<span class="text-danger">*</span></lable>
+            <select name="worldMapModule" id="worldMapModule" class="form-control"
+                data-ng-options="field.type as field.descriptions.singular for field in worldMapModule"
+                data-ng-model="config.worldMapModule" ng-change="loadFieldsOfModule()" required>
+                <option value="">Select a Module</option>
+            </select>
+            <lable for="moduleField" class="control-label">View Field<span class="text-danger">*</span></lable>
+            <select name="moduleField" id="moduleField" class="form-control"
+                data-ng-options="field.name as field.title for field in moduleField" data-ng-model="config.moduleField"
+                required>
+                <option value="">Select a Field</option>
+            </select>
+            <lable for="countryField" class="control-label">Country Field<span class="text-danger">*</span></lable>
+            <select name="countryField" id="countryField" class="form-control"
+                data-ng-options="field.name as field.title for field in countryField"
+                data-ng-model="config.countryField" required>
+                <option value="">Select a Field</option>
+            </select>
+            <div data-ng-if="config.worldMapModule">
+                <label for="resource" class="control-label">Filter Criteria</label>
+                <div data-cs-conditional data-mode="'queryFilters'" data-enable-nested-filter="enableNestedFilter"
+                        data-fields="countryField" data-ng-model="config.filters" data-form-name="'userForm'"
+                        data-parent-form="userForm" data-reset-field="params.fields"></div>
+                </div>
+            </div>
+    </div>
+    <div class="modal-footer">
+        <button id="edit-widget-save" type="submit" class="btn btn-sm btn-primary"><i
+                class="icon icon-check margin-right-sm"></i>Save</button>
+        <button id="edit-widget-cancel" type="button" class="btn btn-sm btn-default" data-ng-click="cancel()"><i
+                class="icon icon-close margin-right-sm"></i>Close</button>
+    </div>
+</form>
