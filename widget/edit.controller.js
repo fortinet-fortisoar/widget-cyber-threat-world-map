@@ -57,7 +57,7 @@ Copyright end */
     }
 
     function loadModuleFields() {
-      $scope.moduleField = [];
+      $scope.moduleFieldByPicklistType = [];
       var entity = new Entity(config.worldMapModule);
       entity.loadFields().then(function () {
         const sortedKeys = Object.keys(entity.fields).sort();
@@ -73,7 +73,7 @@ Copyright end */
             filteredFieldsByPicklist[key] = sortedObj[key];
           }
         }
-        $scope.moduleField = filteredFieldsByPicklist;
+        $scope.moduleFieldByPicklistType = filteredFieldsByPicklist;
       });
     }
   }
