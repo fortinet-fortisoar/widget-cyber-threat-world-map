@@ -14,7 +14,7 @@ Copyright end */
     $scope.cancel = cancel;
     $scope.save = save;
     $scope.config = config;
-    $scope.loadFieldsOfModule = loadFieldsOfModule;
+    $scope.loadModuleFields = loadModuleFields;
 
 
     function _handleTranslations() {
@@ -38,7 +38,7 @@ Copyright end */
       _handleTranslations();
       loadModules();
       if (config.worldMapModule) {
-        loadFieldsOfModule();
+        loadModuleFields();
       }
     }
     function loadModules() {
@@ -56,7 +56,7 @@ Copyright end */
       $uibModalInstance.close($scope.config);
     }
 
-    function loadFieldsOfModule() {
+    function loadModuleFields() {
       $scope.moduleField = [];
       var entity = new Entity(config.worldMapModule);
       entity.loadFields().then(function () {

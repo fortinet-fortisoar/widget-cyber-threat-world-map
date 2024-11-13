@@ -1,14 +1,18 @@
 {
     "name": "cyberThreatWorldMap",
     "title": "Cyber Threat World Map",
-    "subTitle": "World Map widget which maps fields mapping to countries",
+    "subTitle": "World Map widget to plot countries based on geo co-ordinates using d3.js library",
     "version": "1.0.0",
-    "publishedDate": 1717391160,
+    "publishedDate": 1731487820,
     "releaseNotes": "unavailable",
     "metadata": {
         "description": "",
         "pages": [
-            "Dashboard"
+            "Dashboard",
+            "View Panel",
+            "Reports",
+            "Listing",
+            "Add Form"
         ],
         "certified": "Yes",
         "publisher": "Fortinet",
@@ -16,7 +20,8 @@
             "7.6.1"
         ],
         "category": [
-            "Information"
+            "Information",
+            "Threat Intelligence"
         ]
     },
     "development": true
