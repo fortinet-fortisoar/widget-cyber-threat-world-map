@@ -18,12 +18,12 @@ Copyright end-->
             <lable for="worldMapModule" class="control-label">Module<span class="text-danger">*</span></lable>
             <select name="worldMapModule" id="worldMapModule" class="form-control"
                 data-ng-options="field.type as field.descriptions.singular for field in worldMapModule"
-                data-ng-model="config.worldMapModule" ng-change="loadFieldsOfModule()" required>
+                data-ng-model="config.worldMapModule" ng-change="loadModuleFields()" required>
                 <option value="">Select a Module</option>
             </select>
             <lable for="moduleField" class="control-label">View Field<span class="text-danger">*</span></lable>
             <select name="moduleField" id="moduleField" class="form-control"
-                data-ng-options="field.name as field.title for field in moduleField" data-ng-model="config.moduleField"
+                data-ng-options="field.name as field.title for field in moduleFieldByPicklistType" data-ng-model="config.moduleFieldByPicklistType"
                 required>
                 <option value="">Select a Field</option>
             </select>

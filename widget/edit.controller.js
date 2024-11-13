@@ -14,7 +14,7 @@ Copyright end */
     $scope.cancel = cancel;
     $scope.save = save;
     $scope.config = config;
-    $scope.loadFieldsOfModule = loadFieldsOfModule;
+    $scope.loadModuleFields = loadModuleFields;
 
 
     function _handleTranslations() {
@@ -38,7 +38,7 @@ Copyright end */
       _handleTranslations();
       loadModules();
       if (config.worldMapModule) {
-        loadFieldsOfModule();
+        loadModuleFields();
       }
     }
     function loadModules() {
@@ -56,8 +56,8 @@ Copyright end */
       $uibModalInstance.close($scope.config);
     }
 
-    function loadFieldsOfModule() {
-      $scope.moduleField = [];
+    function loadModuleFields() {
+      $scope.moduleFieldByPicklistType = [];
       var entity = new Entity(config.worldMapModule);
       entity.loadFields().then(function () {
         const sortedKeys = Object.keys(entity.fields).sort();
@@ -73,7 +73,7 @@ Copyright end */
             filteredFieldsByPicklist[key] = sortedObj[key];
           }
         }
-        $scope.moduleField = filteredFieldsByPicklist;
+        $scope.moduleFieldByPicklistType = filteredFieldsByPicklist;
       });
     }
   }
