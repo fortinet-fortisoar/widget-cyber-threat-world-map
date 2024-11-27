@@ -258,7 +258,7 @@ Copyright end */
       const svg = d3.select(`#world-map-embedded`).append("svg")
         .attr("width", widthP)
         .attr("height", height)
-        .attr("viewBox", `0 -130 ${width} ${height}`)
+        .attr("viewBox", `0 -130 ${width} ${height}`) // -130 to remove the southern part of map which is not required 
         .attr("id", "world-map-svg")
 
       const projection = d3.geoMercator()
