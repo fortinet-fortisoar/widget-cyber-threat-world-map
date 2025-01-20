@@ -1,5 +1,9 @@
 {
     "cyberThreatWorldMap": {
-        "KEY_NAME": ""
-    }
+        "ERROR_NO_INFORMATION_AVAILABLE": "暂无信息",
+        "HEADER_ADD_MAP": "添加网络威胁世界地图",
+        "HEADER_EDIT_MAP": "编辑网络威胁世界地图",
+        "LABEL_VIEW_FIELD": "查看字段",
+        "LABEL_COUNTRY_FIELD": "国家字段"
+    }    
 }

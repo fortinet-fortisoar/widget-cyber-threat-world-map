@@ -1,5 +1,9 @@
 {
     "cyberThreatWorldMap": {
-        "KEY_NAME": ""
-    }
+        "ERROR_NO_INFORMATION_AVAILABLE": "정보를 사용할 수 없습니다",
+        "HEADER_ADD_MAP": "사이버 위협 세계 지도 추가",
+        "HEADER_EDIT_MAP": "사이버 위협 세계 지도 편집",
+        "LABEL_VIEW_FIELD": "필드 보기",
+        "LABEL_COUNTRY_FIELD": "국가 필드"
+    }    
 }

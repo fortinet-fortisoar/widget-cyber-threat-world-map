@@ -16,6 +16,7 @@ Copyright end */
       widgetUtilityService.checkTranslationMode($scope.$parent.model.type).then(function () {
         $scope.viewWidgetVars = {
           // Create your translating static string variables here
+          ERROR_NO_INFORMATION_AVAILABLE: widgetUtilityService.translate('gridSummary.ERROR_NO_INFORMATION_AVAILABLE')
         };
       });
     }
