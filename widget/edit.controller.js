@@ -24,12 +24,17 @@ Copyright end */
         widgetUtilityService.checkTranslationMode(widgetNameVersion).then(function () {
           $scope.viewWidgetVars = {
             // Create your translating static string variables here
+            HEADER_ADD_MAP: widgetUtilityService.translate('cyberThreatWorldMap.HEADER_ADD_MAP'),
+            HEADER_EDIT_MAP: widgetUtilityService.translate('cyberThreatWorldMap.HEADER_EDIT_MAP'),
+            LABEL_VIEW_FIELD: widgetUtilityService.translate('cyberThreatWorldMap.LABEL_VIEW_FIELD'),
+            LABEL_COUNTRY_FIELD: widgetUtilityService.translate('cyberThreatWorldMap.LABEL_COUNTRY_FIELD'),
           };
+          $scope.header = $scope.config.title ? $scope.viewWidgetVars.HEADER_EDIT_MAP : $scope.viewWidgetVars.HEADER_ADD_MAP;
         });
       } else {
         $timeout(function () {
-          $scope.cancel();
-        });
+          cancel();
+        },100);
       }
     }
 

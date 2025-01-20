@@ -5,7 +5,7 @@ Copyright end-->
 <!-- class="noMargin" name="editWidgetForm" data-ng-class="{'state-wait': processing } -->
 <form data-ng-submit="save()" name="editCyberThreatWorldMapForm">
     <div class="modal-header">
-        <h3 class="modal-title col-md-9">Edit World Map</h3>
+        <h3 class="modal-title col-md-9" data-ng-bind="::header"></h3>
         <button type="button" class="close" data-ng-click="cancel()" data-dismiss="modal" aria-label="Close"
             id="close-edit-widget-form-btn">
             <div aria-hidden="true" class="version-button">+</div>
@@ -13,28 +13,28 @@ Copyright end-->
     </div>
     <div class="modal-body">
         <div class="form-group" name="userForm">
-            <label for="title" class="control-label">Title</label>
+            <label for="title" class="control-label">{{'APP.LABEL.TITLE' | translate}}</label>
             <input id="title" name="title" type="text" class="form-control" data-ng-model="config.title">      
-            <lable for="worldMapModule" class="control-label">Module<span class="text-danger">*</span></lable>
+            <lable for="worldMapModule" class="control-label">{{'COMPONENTS.GRID.MODULE' | translate}}<span class="text-danger">*</span></lable>
             <select name="worldMapModule" id="worldMapModule" class="form-control"
                 data-ng-options="field.type as field.descriptions.singular for field in worldMapModule"
                 data-ng-model="config.worldMapModule" ng-change="loadModuleFields()" required>
-                <option value="">Select a Module</option>
+                <option value="">{{'APP.LABEL.SELECT_A_MODULE' | translate}}</option>
             </select>
-            <lable for="moduleField" class="control-label">View Field<span class="text-danger">*</span></lable>
+            <lable for="moduleField" class="control-label">{{viewWidgetVars.LABEL_VIEW_FIELD}}<span class="text-danger">*</span></lable>
             <select name="moduleField" id="moduleField" class="form-control"
                 data-ng-options="field.name as field.title for field in moduleFieldByPicklistType" data-ng-model="config.moduleFieldByPicklistType"
                 required>
-                <option value="">Select a Field</option>
+                <option value="">{{'COMPONENTS.FILTER.CONDITIONAL.SELECT_A_FIELD' | translate}}</option>
             </select>
-            <lable for="countryField" class="control-label">Country Field<span class="text-danger">*</span></lable>
+            <lable for="countryField" class="control-label">{{viewWidgetVars.LABEL_COUNTRY_FIELD}}<span class="text-danger">*</span></lable>
             <select name="countryField" id="countryField" class="form-control"
                 data-ng-options="field.name as field.title for field in countryField"
                 data-ng-model="config.countryField" required>
-                <option value="">Select a Field</option>
+                <option value="">{{'COMPONENTS.FILTER.CONDITIONAL.SELECT_A_FIELD' | translate}}</option>
             </select>
             <div data-ng-if="config.worldMapModule">
-                <label for="resource" class="control-label">Filter Criteria</label>
+                <label for="resource" class="control-label">{{'COMPONENTS.GRID.QUERY.FILTER_CRITERIA' | translate}}</label>
                 <div data-cs-conditional data-mode="'queryFilters'" data-enable-nested-filter="enableNestedFilter"
                         data-fields="countryField" data-ng-model="config.filters" data-form-name="'userForm'"
                         data-parent-form="userForm" data-reset-field="params.fields"></div>
@@ -43,8 +43,8 @@ Copyright end-->
     </div>
     <div class="modal-footer">
         <button id="edit-widget-save" type="submit" class="btn btn-sm btn-primary"><i
-                class="icon icon-check margin-right-sm"></i>Save</button>
+                class="icon icon-check margin-right-sm"></i>{{'APP.BUTTON.SAVE' | translate}}</button>
         <button id="edit-widget-cancel" type="button" class="btn btn-sm btn-default" data-ng-click="cancel()"><i
-                class="icon icon-close margin-right-sm"></i>Close</button>
+                class="icon icon-close margin-right-sm"></i>{{'APP.BUTTON.CANCEL' | translate}}</button>
     </div>
 </form>
