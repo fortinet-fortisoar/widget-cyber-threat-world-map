@@ -307,7 +307,7 @@ Copyright end */
           // Create an array of points for plotting
           const points = filteredData.map((element, index) => ({
             name: element['country'],
-            count: element['visit_count'],
+            count: element['count'],
             coordinates: countryCoordinates[element['country']],
             country: element['country'],
             iso: element['iso'].toLowerCase(),
@@ -340,7 +340,6 @@ Copyright end */
             .on("mouseover", function (d) { //to show tooltip 
               let htmlContent = `<img src="https://flagcdn.com/48x36/${d.iso}.png" alt="Flag of ${d.country}" title="${d.country}" class="flag padding-top-4 float-left" /> <span class="countrySVG">${d.country} </br> ${d.count}<span>`//+ names;
               const tempDiv = document.createElement('div');
-
               // Set the text with <br> tags
               tempDiv.innerHTML = htmlContent;
 
@@ -376,6 +375,14 @@ Copyright end */
                 .attr("width", width)
                 .attr("height", height)
                 .html(htmlContent);
+            })
+            .on("mouseout", function () {
+              d3.select(this).transition()
+                .duration(300)
+                .attr("r", 5)
+                .attr("fill", "red");
+
+              svg.select("#map-tooltip").remove();
             })
         }
       });
