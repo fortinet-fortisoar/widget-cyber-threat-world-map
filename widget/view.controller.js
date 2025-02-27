@@ -298,7 +298,7 @@ Copyright end */
         const countryCoordinates = {};
         world.features.forEach(feature => {
           const countryName = feature.properties.name;
-          const countryId = feature.properties.id;
+          //const countryId = feature.properties.id;
           const coordinates = d3.geoCentroid(feature);
           countryCoordinates[countryName] = coordinates;
         });
@@ -307,7 +307,7 @@ Copyright end */
           // Create an array of points for plotting
           const points = filteredData.map((element, index) => ({
             name: element['country'],
-            count: element['count'],
+            count: $filter('numberToDisplay')(element['count']),
             coordinates: countryCoordinates[element['country']],
             country: element['country'],
             iso: element['iso'].toLowerCase(),
@@ -338,9 +338,12 @@ Copyright end */
             .attr("stroke", "black")
             .attr("stroke-width", 1)
             .on("mouseover", function (d) { //to show tooltip 
-              let htmlContent = `<img src="https://flagcdn.com/48x36/${d.iso}.png" alt="Flag of ${d.country}" title="${d.country}" class="flag padding-top-4 float-left" /> <span class="countrySVG">${d.country} </br> ${d.count}<span>`//+ names;
+              let htmlContent = `<div class="display-flex padding-5"><div class='padding-top-7'>
+              <img src="https://flagcdn.com/48x36/${d.iso}.png" alt="Flag of ${d.country}" title="${d.country}" class="flag padding-top-4 float-left" /></div> 
+              <div class="countrySVG">${d.country} </br> ${d.count}</div></div>`;
+              
               const tempDiv = document.createElement('div');
-              // Set the text with <br> tags
+                 // Set the text with <br> tags
               tempDiv.innerHTML = htmlContent;
 
               // Apply styles to the div
@@ -357,7 +360,7 @@ Copyright end */
 
               // Get the dimensions of the div
               const width = tempDiv.offsetWidth + 15;
-              const height = tempDiv.offsetHeight + 25;
+              const height = tempDiv.offsetHeight + 21;
               document.body.removeChild(tempDiv);
 
               const transform = d3.zoomTransform(svg.node());
@@ -381,7 +384,6 @@ Copyright end */
                 .duration(300)
                 .attr("r", 5)
                 .attr("fill", "red");
-
               svg.select("#map-tooltip").remove();
             })
         }
