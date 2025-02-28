@@ -11,6 +11,7 @@ Copyright end */
   cyberThreatWorldMap100Ctrl.$inject = ['$scope', 'PagedCollection', 'config', 'ALL_RECORDS_SIZE', 'widgetUtilityService', '$filter'];
 
   function cyberThreatWorldMap100Ctrl($scope, PagedCollection, config, ALL_RECORDS_SIZE, widgetUtilityService, $filter) {
+    const TOP_COUNTRY_LIMIT = 5;
 
     function _handleTranslations() {
       widgetUtilityService.checkTranslationMode($scope.$parent.model.type).then(function () {
@@ -277,14 +278,14 @@ Copyright end */
 
       //svg.call(zoom);
 
+      //"https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json"
       d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(world => {
         const validCountries = new Set(world.features.map(feature => feature.properties.name));
 
         countries = $scope.config.data;
 
         // Filter out invalid modules and countries
-        //const filteredData = countries.filter(item => validCountries.has(item));
-        const filteredData = countries.filter(item => validCountries.has(item.country));
+        const filteredData = countries;
 
         svg.append("g")
           .selectAll("path")
@@ -298,20 +299,26 @@ Copyright end */
         const countryCoordinates = {};
         world.features.forEach(feature => {
           const countryName = feature.properties.name;
-          //const countryId = feature.properties.id;
+          const countryId = feature.id;
           const coordinates = d3.geoCentroid(feature);
-          countryCoordinates[countryName] = coordinates;
+          countryCoordinates[countryId] = coordinates;
         });
 
+        //the country name follows the ISO-3166 A-2 format
+        //iso3 used to fetch the co-ordinates countries name are different (eg: United States/United States of America)
         if (filteredData && filteredData.length > 0) {
           // Create an array of points for plotting
           const points = filteredData.map((element, index) => ({
             name: element['country'],
             count: $filter('numberToDisplay')(element['count']),
-            coordinates: countryCoordinates[element['country']],
+            coordinates: countryCoordinates[element['iso3']], 
             country: element['country'],
-            iso: element['iso'].toLowerCase(),
-          }));
+            iso: element['iso'].toLowerCase(), // to showcase flag
+          })).filter(element => element.coordinates !== undefined); 
+
+
+          // return only top 5 valid countries
+          points = points.sort((a, b) => b.count - a.count).slice(0, TOP_COUNTRY_LIMIT);
 
           svg.append("g")
             .selectAll("circle")
