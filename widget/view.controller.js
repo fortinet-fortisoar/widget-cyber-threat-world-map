@@ -308,7 +308,7 @@ Copyright end */
         //iso3 used to fetch the co-ordinates countries name are different (eg: United States/United States of America)
         if (filteredData && filteredData.length > 0) {
           // Create an array of points for plotting
-          const points = filteredData.map((element, index) => ({
+          let points = filteredData.map((element, index) => ({
             name: element['country'],
             count: $filter('numberToDisplay')(element['count']),
             coordinates: countryCoordinates[element['iso3']], 
