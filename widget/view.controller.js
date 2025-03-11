@@ -367,47 +367,48 @@ Copyright end */
                   <div class="countrySVG padding-top-4">${d.country} </br> ${d.count}</div></div>`;
 
                 const tempDiv = document.createElement("div");
-                // Set the text with <br> tags
                 tempDiv.innerHTML = htmlContent;
-
-                // Apply styles to the div
-                tempDiv.style.fontSize = `16px`;
-                tempDiv.style.lineHeight = "normal"; // You can adjust this if needed
-                tempDiv.style.visibility = "hidden"; // Hide it from view
-                tempDiv.style.position = "absolute"; // Remove it from the normal document flow
-                tempDiv.style.whiteSpace = "nowrap"; // Make sure it doesn't wrap
-                tempDiv.style.width = "auto"; // Allow width to expand with content
-                tempDiv.style.height = "auto"; // Allow height to expand with content
-
-                // Append the div to the body
+                tempDiv.style.position = "absolute";
+                tempDiv.style.visibility = "hidden";
+                tempDiv.style.whiteSpace = "nowrap";
                 document.body.appendChild(tempDiv);
-
-                // Get the dimensions of the div
-                const width = tempDiv.offsetWidth + 15;
-                const height = tempDiv.offsetHeight + 19;
-                // document.body.removeChild(tempDiv);
-
+            
+                const tooltipWidth = tempDiv.offsetWidth + 15;
+                const tooltipHeight = tempDiv.offsetHeight + 10;
+                document.body.removeChild(tempDiv);
+            
                 const transform = d3.zoomTransform(svg.node());
-                // Apply the transform to the coordinates
-                const transformedCoordinates = transform.apply(
-                  projection(d.coordinates)
-                );
+                const transformedCoordinates = transform.apply(projection(d.coordinates));
+            
+                let x = transformedCoordinates[0] - tooltipWidth / 2;
+                let y = transformedCoordinates[1] - tooltipHeight - 10;
+            
+                const mapWidth = width; 
+                const mapHeight = height;
 
+                if (x + tooltipWidth > mapWidth) {
+                    x = mapWidth - tooltipWidth - 10;
+                }
+            
+                if (x < 0) {
+                    x = 10;
+                }
+            
                 d3.select(this)
-                  .transition()
-                  .duration(50)
-                  .attr("r", 7)
-                  .attr("fill", "orange");
+                    .transition()
+                    .duration(50)
+                    .attr("r", 7)
+                    .attr("fill", "orange");
+            
                 svg
-                  .append("foreignObject")
-                  .attr("transform", `translate(${width / 2}, ${height / 2}) scale(1.1, 1) translate(${-width / 2}, ${-height / 2})`)
-                  .attr("id", "map-tooltip")
-                  .attr("x", transformedCoordinates[0] - 30)
-                  .attr("y", transformedCoordinates[1] - 40)
-                  .attr("width", width)
-                  .attr("height", height)
-                  .html(htmlContent);
-              })
+                    .append("foreignObject")
+                    .attr("id", "map-tooltip")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("width", tooltipWidth)
+                    .attr("height", tooltipHeight)
+                    .html(htmlContent);
+            })
               .on("mouseout", function () {
                 d3.select(this)
                   .transition()
