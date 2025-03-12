@@ -8,9 +8,10 @@ Copyright end */
     .module('cybersponse')
     .controller('cyberThreatWorldMap100Ctrl', cyberThreatWorldMap100Ctrl);
 
-  cyberThreatWorldMap100Ctrl.$inject = ['$scope', 'PagedCollection', 'config', 'ALL_RECORDS_SIZE', 'widgetUtilityService', '$filter'];
+  cyberThreatWorldMap100Ctrl.$inject = ['$scope', 'PagedCollection', 'config', 'ALL_RECORDS_SIZE', 'widgetUtilityService', '$filter', '$http', 'widgetBasePath'];
 
-  function cyberThreatWorldMap100Ctrl($scope, PagedCollection, config, ALL_RECORDS_SIZE, widgetUtilityService, $filter) {
+  function cyberThreatWorldMap100Ctrl($scope, PagedCollection, config, ALL_RECORDS_SIZE, widgetUtilityService, $filter, $http, widgetBasePath) {
+    $scope.widgetBasePath = widgetBasePath;
     const TOP_COUNTRY_LIMIT = 5;
 
     function _handleTranslations() {
@@ -100,8 +101,10 @@ Copyright end */
 
         svg.call(zoom);
 
-        d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(world => {
-          const validCountries = new Set(world.features.map(feature => feature.properties.name));
+        $http
+        .get($scope.widgetBasePath + "widgetAssets/country.geojson")
+        .then(function (world) {
+          const validCountries = new Set(world.data.features.map(feature => feature.properties.name));
 
           // Filter out invalid modules and countries
           const filteredData = countries.map((country, index) => ({ country: country, module: modules[index] }))
@@ -112,7 +115,7 @@ Copyright end */
 
           svg.append("g")
             .selectAll("path")
-            .data(world.features)
+            .data(world.data.features)
             .enter().append("path")
             .attr("fill", "#b8b8b8")
             .attr("d", path)
@@ -120,11 +123,10 @@ Copyright end */
             .style("stroke-width", 0.5);
 
           const countryCoordinates = {};
-          world.features.forEach(feature => {
-            const countryName = feature.properties.name;
-            const countryId = feature.properties.id;
+          world.data.features.forEach((feature) => {
+            const countryId = feature.id;
             const coordinates = d3.geoCentroid(feature);
-            countryCoordinates[countryName] = coordinates;
+            countryCoordinates[countryId] = coordinates;
           });
 
           // Group modules by Country
@@ -260,11 +262,11 @@ Copyright end */
       const svg = d3.select(`#world-map-embedded`).append("svg")
         .attr("width", widthP)
         .attr("height", height)
-        .attr("viewBox", `0 -130 ${width} ${height}`) // -130 to remove the southern part of map which is not required 
+        .attr("viewBox", `0 -120 ${width} ${height}`) // -120 to remove the southern part of map which is not required 
         .attr("id", "world-map-svg")
 
       const projection = d3.geoMercator()
-        .scale(140)
+        .scale(150)
         .translate([width / 2, height / 2]);
 
       const path = d3.geoPath().projection(projection);
@@ -278,124 +280,146 @@ Copyright end */
 
       //svg.call(zoom);
 
-      //"https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json"
-      d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(world => {
-        const validCountries = new Set(world.features.map(feature => feature.properties.name));
+      $http
+        .get($scope.widgetBasePath + "widgetAssets/country.geojson")
+        .then(function (world) {
+          let validCountries = new Set(world.data.features.map((feature) => feature.properties.name));
 
-        countries = $scope.config.data;
+          countries = $scope.config.data;
 
-        // Filter out invalid modules and countries
-        const filteredData = countries;
+          // Filter out invalid modules and countries
+          const filteredData = countries;
 
-        svg.append("g")
-          .selectAll("path")
-          .data(world.features)
-          .enter().append("path")
-          .attr("fill", "#b8b8b8")
-          .attr("d", path)
-          .style("stroke", "white")
-          .style("stroke-width", 0.5);
+          svg
+            .append("g")
+            .attr("transform", `translate(${width / 2}, ${height / 2}) scale(1.1, 1) translate(${-width / 2}, ${-height / 2})`)
+            .selectAll("path")
+            .data(world.data.features)
+            .enter()
+            .append("path")
+            .attr("fill", "#b8b8b8")
+            .attr("d", path)
+            .style("stroke", "white")
+            .style("stroke-width", 0.5);
 
-        const countryCoordinates = {};
-        world.features.forEach(feature => {
-          const countryName = feature.properties.name;
-          const countryId = feature.id;
-          const coordinates = d3.geoCentroid(feature);
-          countryCoordinates[countryId] = coordinates;
+          const countryCoordinates = {};
+          world.data.features.forEach((feature) => {
+            const countryId = feature.id;
+            const coordinates = d3.geoCentroid(feature);
+            countryCoordinates[countryId] = coordinates;
+          });
+
+          //the country name follows the ISO-3166 A-2 format
+          //iso3 used to fetch the co-ordinates countries name are different (eg: United States/United States of America)
+          if (filteredData && filteredData.length > 0) {
+            // Create an array of points for plotting
+            let points = filteredData
+              .map((element, index) => ({
+                name: element["country"],
+                count: element["count"],
+                coordinates: countryCoordinates[element["iso"]],
+                country: element["country"],
+                iso: element["iso"].toLowerCase(), // to showcase flag
+              }))
+              .filter((element) => element.coordinates !== undefined);
+
+            // return only top 5 valid countries
+            points = points.sort((a, b) => b.count - a.count).slice(0, TOP_COUNTRY_LIMIT);
+            points.forEach((point) => (
+              point["count"] = $filter("numberToDisplay")(point["count"])
+            ));
+
+            svg
+              .append("g")
+              .attr("transform", `translate(${width / 2}, ${height / 2}) scale(1.1, 1) translate(${-width / 2}, ${-height / 2})`)
+              .selectAll("circle")
+              .data(points)
+              .enter()
+              .append("circle") //to draw co-ordinates
+              .attr("cx", (d) => {
+                const coord = projection(d.coordinates);
+                if (!coord) {
+                  console.error(
+                    `Projection failed for coordinates: ${d.coordinates}`
+                  );
+                  return 0;
+                }
+                return coord[0];
+              })
+              .attr("cy", (d) => {
+                const coord = projection(d.coordinates);
+                if (!coord) {
+                  console.error(
+                    `Projection failed for coordinates: ${d.coordinates}`
+                  );
+                  return 0;
+                }
+                return coord[1];
+              })
+              .attr("r", 5)
+              .attr("fill", "red")
+              .attr("stroke", "black")
+              .attr("stroke-width", 1)
+              .on("mouseover", function (d) {
+                //to show tooltip
+                let htmlContent = `<div class="display-flex padding-5"><div class='padding-top-7'>
+                  <img src="https://flagcdn.com/48x36/${d.iso}.png" alt="Flag of ${d.country}" title="${d.country}" class="flag padding-top-7 float-left" /></div> 
+                  <div class="countrySVG padding-top-4">${d.country} </br> ${d.count}</div></div>`;
+
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = htmlContent;
+                tempDiv.style.position = "absolute";
+                tempDiv.style.visibility = "hidden";
+                tempDiv.style.whiteSpace = "nowrap";
+                document.body.appendChild(tempDiv);
+            
+                const tooltipWidth = tempDiv.offsetWidth + 15;
+                const tooltipHeight = tempDiv.offsetHeight + 10;
+                document.body.removeChild(tempDiv);
+            
+                const transform = d3.zoomTransform(svg.node());
+                const transformedCoordinates = transform.apply(projection(d.coordinates));
+            
+                let x = transformedCoordinates[0] - tooltipWidth / 2;
+                let y = transformedCoordinates[1] - tooltipHeight - 10;
+            
+                const mapWidth = width; 
+                const mapHeight = height;
+
+                if (x + tooltipWidth > mapWidth) {
+                    x = mapWidth - tooltipWidth - 10;
+                }
+            
+                if (x < 0) {
+                    x = 10;
+                }
+            
+                d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .attr("r", 7)
+                    .attr("fill", "orange");
+            
+                svg
+                    .append("foreignObject")
+                    .attr("id", "map-tooltip")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("width", tooltipWidth)
+                    .attr("height", tooltipHeight)
+                    .html(htmlContent);
+            })
+              .on("mouseout", function () {
+                d3.select(this)
+                  .transition()
+                  .duration(100)
+                  .attr("r", 5)
+                  .attr("fill", "red");
+                svg.select("#map-tooltip").remove();
+              });
+          }
         });
-
-        //the country name follows the ISO-3166 A-2 format
-        //iso3 used to fetch the co-ordinates countries name are different (eg: United States/United States of America)
-        if (filteredData && filteredData.length > 0) {
-          // Create an array of points for plotting
-          let points = filteredData.map((element, index) => ({
-            name: element['country'],
-            count: $filter('numberToDisplay')(element['count']),
-            coordinates: countryCoordinates[element['iso3']], 
-            country: element['country'],
-            iso: element['iso'].toLowerCase(), // to showcase flag
-          })).filter(element => element.coordinates !== undefined); 
-
-
-          // return only top 5 valid countries
-          points = points.sort((a, b) => b.count - a.count).slice(0, TOP_COUNTRY_LIMIT);
-
-          svg.append("g")
-            .selectAll("circle")
-            .data(points)
-            .enter().append("circle") //to draw co-ordinates
-            .attr("cx", d => {
-              const coord = projection(d.coordinates);
-              if (!coord) {
-                console.error(`Projection failed for coordinates: ${d.coordinates}`);
-                return 0;
-              }
-              return coord[0];
-            })
-            .attr("cy", d => {
-              const coord = projection(d.coordinates);
-              if (!coord) {
-                console.error(`Projection failed for coordinates: ${d.coordinates}`);
-                return 0;
-              }
-              return coord[1];
-            })
-            .attr("r", 5)
-            .attr("fill", "red")
-            .attr("stroke", "black")
-            .attr("stroke-width", 1)
-            .on("mouseover", function (d) { //to show tooltip 
-              let htmlContent = `<div class="display-flex padding-5"><div class='padding-top-7'>
-              <img src="https://flagcdn.com/48x36/${d.iso}.png" alt="Flag of ${d.country}" title="${d.country}" class="flag padding-top-4 float-left" /></div> 
-              <div class="countrySVG">${d.country} </br> ${d.count}</div></div>`;
-              
-              const tempDiv = document.createElement('div');
-                 // Set the text with <br> tags
-              tempDiv.innerHTML = htmlContent;
-
-              // Apply styles to the div
-              tempDiv.style.fontSize = `16px`;
-              tempDiv.style.lineHeight = 'normal'; // You can adjust this if needed
-              tempDiv.style.visibility = 'hidden'; // Hide it from view
-              tempDiv.style.position = 'absolute'; // Remove it from the normal document flow
-              tempDiv.style.whiteSpace = 'nowrap'; // Make sure it doesn't wrap
-              tempDiv.style.width = 'auto'; // Allow width to expand with content
-              tempDiv.style.height = 'auto'; // Allow height to expand with content
-
-              // Append the div to the body
-              document.body.appendChild(tempDiv);
-
-              // Get the dimensions of the div
-              const width = tempDiv.offsetWidth + 15;
-              const height = tempDiv.offsetHeight + 21;
-              document.body.removeChild(tempDiv);
-
-              const transform = d3.zoomTransform(svg.node());
-              // Apply the transform to the coordinates
-              const transformedCoordinates = transform.apply(projection(d.coordinates));
-
-              d3.select(this).transition()
-                .duration(300)
-                .attr("r", 7)
-                .attr("fill", "orange");
-              svg.append("foreignObject")
-                .attr("id", "map-tooltip")
-                .attr("x", transformedCoordinates[0] + 10)
-                .attr("y", transformedCoordinates[1] - 40)
-                .attr("width", width)
-                .attr("height", height)
-                .html(htmlContent);
-            })
-            .on("mouseout", function () {
-              d3.select(this).transition()
-                .duration(300)
-                .attr("r", 5)
-                .attr("fill", "red");
-              svg.select("#map-tooltip").remove();
-            })
-        }
-      });
-    }
+    };
 
     init();
   }
