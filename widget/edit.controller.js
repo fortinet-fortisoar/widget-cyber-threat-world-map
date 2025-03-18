@@ -8,9 +8,9 @@ Copyright end */
     .module('cybersponse')
     .controller('editCyberThreatWorldMap100Ctrl', editCyberThreatWorldMap100Ctrl);
 
-  editCyberThreatWorldMap100Ctrl.$inject = ['$scope', '$uibModalInstance', 'config', 'widgetUtilityService', '$timeout', 'modelMetadatasService', 'Entity'];
+  editCyberThreatWorldMap100Ctrl.$inject = ['$scope', '$uibModalInstance', 'config', 'widgetUtilityService', '$timeout', 'modelMetadatasService', 'Entity', 'appModulesService'];
 
-  function editCyberThreatWorldMap100Ctrl($scope, $uibModalInstance, config, widgetUtilityService, $timeout, modelMetadatasService, Entity) {
+  function editCyberThreatWorldMap100Ctrl($scope, $uibModalInstance, config, widgetUtilityService, $timeout, modelMetadatasService, Entity, appModulesService) {
     $scope.cancel = cancel;
     $scope.save = save;
     $scope.config = config;
@@ -47,8 +47,19 @@ Copyright end */
       }
     }
     function loadModules() {
-      modelMetadatasService.getModuleList().then(function (modules) {
-        $scope.worldMapModule = modules;
+      appModulesService.load(true).then(function (modules) {
+        $scope.modules = modules;
+        //Create a list of modules with atleast one JSON field
+        $scope.modules.forEach((module) => {
+          var moduleMetaData = modelMetadatasService.getMetadataByModuleType(module.type);
+          for (let fieldIndex = 0; fieldIndex < moduleMetaData.attributes.length; fieldIndex++) {
+            //Check If JSON field is present in the module
+            if (moduleMetaData.attributes[fieldIndex].type === "object") {
+              $scope.worldMapModule.push(module);
+              break;
+            }
+          }
+        });
       });
     }
     init();
