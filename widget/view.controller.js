@@ -8,17 +8,19 @@ Copyright end */
     .module('cybersponse')
     .controller('cyberThreatWorldMap100Ctrl', cyberThreatWorldMap100Ctrl);
 
-  cyberThreatWorldMap100Ctrl.$inject = ['$scope', 'PagedCollection', 'config', 'ALL_RECORDS_SIZE', 'widgetUtilityService', '$filter', '$http', 'widgetBasePath'];
+  cyberThreatWorldMap100Ctrl.$inject = ['$scope', 'PagedCollection', 'config', 'ALL_RECORDS_SIZE', 'widgetUtilityService', '$filter', '$http', 'widgetBasePath', 'modelMetadatasService', '$state', 'cyberThreatWorldMapService'];
 
-  function cyberThreatWorldMap100Ctrl($scope, PagedCollection, config, ALL_RECORDS_SIZE, widgetUtilityService, $filter, $http, widgetBasePath) {
+  function cyberThreatWorldMap100Ctrl($scope, PagedCollection, config, ALL_RECORDS_SIZE, widgetUtilityService, $filter, $http, widgetBasePath, modelMetadatasService, $state, cyberThreatWorldMapService) {
     $scope.widgetBasePath = widgetBasePath;
+    var pageState = $state;
+
     const TOP_COUNTRY_LIMIT = 5;
 
     function _handleTranslations() {
       widgetUtilityService.checkTranslationMode($scope.$parent.model.type).then(function () {
         $scope.viewWidgetVars = {
           // Create your translating static string variables here
-          ERROR_NO_INFORMATION_AVAILABLE: widgetUtilityService.translate('gridSummary.ERROR_NO_INFORMATION_AVAILABLE')
+          ERROR_NO_INFORMATION_AVAILABLE: widgetUtilityService.translate('cyberThreatWorldMap.ERROR_NO_INFORMATION_AVAILABLE')
         };
       });
     }
@@ -26,6 +28,7 @@ Copyright end */
     function init() {
       // To handle backward compatibility for widget
       $scope.config = config;
+      checkCurrentPage(pageState);
       _handleTranslations();
       if ($scope.config.embedded) {
         setTimeout(() => {
@@ -33,8 +36,34 @@ Copyright end */
         }, 10);
       }
       else {
-        loadWorldMap();
+        if($scope.config.worldMapModule==='ioc_searches'){
+          $scope.config.embedded = true; //as IOC is external module treating it as embedded
+          callConnectorAction();
+        }
+        else{
+          loadWorldMap();
+        }
       }
+    }
+
+    function checkCurrentPage(){
+      if (pageState.current.name.includes('viewPanel.modulesDetail')) {
+        let params = pageState.current.params;
+        $scope.indicator = params.id;
+      }
+    }
+
+    function callConnectorAction(){
+      let moduleMetaData = modelMetadatasService.getMetadataByModuleType($scope.config.worldMapModule);
+      let _connectorName = moduleMetaData.dataSource.connector;
+      let _connectorAction = moduleMetaData.dataSource.actions.get_visiting_countries;
+      let payload = { 'indicator': $scope.indicator };
+      cyberThreatWorldMapService.executeAction(_connectorName, _connectorAction, payload).then(function(response){
+        if(response?.data?.length>0){
+          $scope.config.data = response.data;
+          populateMap();
+        }
+      });
     }
 
     $scope.$on('$destroy', function () {
@@ -254,7 +283,6 @@ Copyright end */
       let countries = [];
       const parentDiv = d3.select(`#world-map-embedded`);
       const widthP = parentDiv.node().getBoundingClientRect().width;
-      const heightP = parentDiv.node().getBoundingClientRect().height;
 
       const width = 1100;
       const height = 500;
