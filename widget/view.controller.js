@@ -12,6 +12,10 @@ Copyright end */
 
   function cyberThreatWorldMap100Ctrl($scope, PagedCollection, config, ALL_RECORDS_SIZE, widgetUtilityService, $filter, $http, widgetBasePath, modelMetadatasService, $state, cyberThreatWorldMapService) {
     $scope.widgetBasePath = widgetBasePath;
+    $scope.processing = true;
+    $scope.noData = false;
+    $scope.tooltipErrorMsg = '';
+    
     var pageState = $state;
 
     const TOP_COUNTRY_LIMIT = 5;
@@ -37,7 +41,6 @@ Copyright end */
       }
       else {
         if($scope.config.worldMapModule==='ioc_searches'){
-          $scope.config.embedded = true; //as IOC is external module treating it as embedded
           callConnectorAction();
         }
         else{
@@ -54,6 +57,7 @@ Copyright end */
     }
 
     function callConnectorAction(){
+      $scope.noData = false;
       let moduleMetaData = modelMetadatasService.getMetadataByModuleType($scope.config.worldMapModule);
       let _connectorName = moduleMetaData.dataSource.connector;
       let _connectorAction = moduleMetaData.dataSource.actions.get_visiting_countries;
@@ -61,8 +65,17 @@ Copyright end */
       cyberThreatWorldMapService.executeAction(_connectorName, _connectorAction, payload).then(function(response){
         if(response?.data?.length>0){
           $scope.config.data = response.data;
-          populateMap();
+        }else{
+          $scope.noData = true;
         }
+      },function(error){
+        $scope.processing = false;
+        $scope.noData = true;
+        $scope.tooltipErrorMsg = 'Error while fetching data. Please check connector logs for more info.';
+        //error here
+      }).finally(function(){
+        $scope.processing = false;
+        populateMap();
       });
     }
 
@@ -281,13 +294,13 @@ Copyright end */
     //embed world map
     function populateMap() {
       let countries = [];
-      const parentDiv = d3.select(`#world-map-embedded`);
+      const parentDiv = d3.select(`#world-map-${config.wid ? config.wid : 'embedded'}`);
       const widthP = parentDiv.node().getBoundingClientRect().width;
 
       const width = 1100;
       const height = 500;
 
-      const svg = d3.select(`#world-map-embedded`).append("svg")
+      const svg = parentDiv.append("svg")
         .attr("width", widthP)
         .attr("height", height)
         .attr("viewBox", `0 -120 ${width} ${height}`) // -120 to remove the southern part of map which is not required 
@@ -311,11 +324,8 @@ Copyright end */
       $http
         .get($scope.widgetBasePath + "widgetAssets/country.geojson")
         .then(function (world) {
-          let validCountries = new Set(world.data.features.map((feature) => feature.properties.name));
-
+          $scope.processing = false;
           countries = $scope.config.data;
-
-          // Filter out invalid modules and countries
           const filteredData = countries;
 
           svg
