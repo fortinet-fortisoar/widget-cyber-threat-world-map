@@ -9,10 +9,17 @@ Copyright end -->
           <h5 class="margin-top-0 margin-bottom-0 text-overflow ng-binding">{{config.title}}</h5>
       </div>
   </div>
+  <div data-ng-if="processing">
+    <cs-spinner></cs-spinner>
+  </div>
   <div>
+    <div data-ng-if="config.data.length===0 || noData" class="font-09em padding-lg padding-left-xlg">
+      <span data-ng-if="tooltipErrorMsg!==''" data-uib-tooltip-html="tooltipErrorMsg" data-tooltip-placement="top-left">
+        <i style="color: #E84230;" class="fa fa-exclamation-triangle"></i></span>
+      <span class="noInformation">{{viewWidgetVars.ERROR_NO_INFORMATION_AVAILABLE}}</span>
+    </div>
     <div data-ng-if="config.embedded===undefined" class="widget-container chart display-flex align-items-center justify-content" style="width: 100%; height:100%" id="world-map-{{config.wid}}">
     </div>
-    <div data-ng-if="config.data.length===0" class="text-center font-08em">{{viewWidgetVars.ERROR_NO_INFORMATION_AVAILABLE}}</div>
     <div data-ng-if="config.embedded" class="widget-container chart display-flex align-items-center justify-content" style="width: 100%; height:100%" id="world-map-embedded">
     </div>
   </div>
