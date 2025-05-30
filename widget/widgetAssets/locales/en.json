@@ -4,6 +4,7 @@
         "HEADER_ADD_MAP": "Add Cyber Threat World Map",
         "HEADER_EDIT_MAP": "Edit Cyber Threat World Map",
         "LABEL_VIEW_FIELD": "View Field",
-        "LABEL_COUNTRY_FIELD": "Country Field"
+        "LABEL_COUNTRY_FIELD": "Country Field",
+        "LABEL_NOT_CONFIGURABLE": "This widget is bundled and not available for standalone use"
     }
 }

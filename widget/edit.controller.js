@@ -14,6 +14,7 @@ Copyright end */
     $scope.cancel = cancel;
     $scope.save = save;
     $scope.config = config;
+    $scope.isConfigurable = false;
     $scope.loadModuleFields = loadModuleFields;
 
 
@@ -28,6 +29,7 @@ Copyright end */
             HEADER_EDIT_MAP: widgetUtilityService.translate('cyberThreatWorldMap.HEADER_EDIT_MAP'),
             LABEL_VIEW_FIELD: widgetUtilityService.translate('cyberThreatWorldMap.LABEL_VIEW_FIELD'),
             LABEL_COUNTRY_FIELD: widgetUtilityService.translate('cyberThreatWorldMap.LABEL_COUNTRY_FIELD'),
+            LABEL_NOT_CONFIGURABLE: widgetUtilityService.translate('cyberThreatWorldMap.LABEL_NOT_CONFIGURABLE')
           };
           $scope.header = $scope.config.title ? $scope.viewWidgetVars.HEADER_EDIT_MAP : $scope.viewWidgetVars.HEADER_ADD_MAP;
         });
@@ -61,6 +63,9 @@ Copyright end */
           }
         });
       });
+      // modelMetadatasService.getModuleList().then(function (modules) {
+      //   $scope.worldMapModule = modules;
+      // });
     }
     init();
 
