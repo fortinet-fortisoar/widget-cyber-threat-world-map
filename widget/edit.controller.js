@@ -63,9 +63,6 @@ Copyright end */
           }
         });
       });
-      // modelMetadatasService.getModuleList().then(function (modules) {
-      //   $scope.worldMapModule = modules;
-      // });
     }
     init();
 
