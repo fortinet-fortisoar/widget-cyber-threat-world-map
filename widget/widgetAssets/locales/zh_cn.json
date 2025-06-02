@@ -4,6 +4,7 @@
         "HEADER_ADD_MAP": "添加网络威胁世界地图",
         "HEADER_EDIT_MAP": "编辑网络威胁世界地图",
         "LABEL_VIEW_FIELD": "查看字段",
-        "LABEL_COUNTRY_FIELD": "国家字段"
+        "LABEL_COUNTRY_FIELD": "国家字段",
+        "LABEL_NOT_CONFIGURABLE": "此小部件是捆绑提供的，无法单独使用。"
     }    
 }

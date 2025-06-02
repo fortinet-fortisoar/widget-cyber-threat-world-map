@@ -4,6 +4,7 @@
         "HEADER_ADD_MAP": "サイバー脅威ワールドマップを追加",
         "HEADER_EDIT_MAP": "サイバー脅威ワールドマップを編集",
         "LABEL_VIEW_FIELD": "フィールドを表示",
-        "LABEL_COUNTRY_FIELD": "国フィールド"
+        "LABEL_COUNTRY_FIELD": "国フィールド",
+        "LABEL_NOT_CONFIGURABLE": "このウィジェットはバンドルされており、単体では使用できません"
     }    
 }
